@@ -1,31 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { getFriends } from "../Utilities/firebaseUtils";
+import React, { memo, useEffect, useState } from "react";
 import { useDataLayerValue } from "../Utilities/reuseFunctions";
 import { Button } from "./Buttons";
 
-export const SearchResults = ({ currentUser }) => {
+export const SearchResults = memo(({ currentUser }) => {
   const [{ searchResults, searchRef }, dispatch] = useDataLayerValue();
-  const [friendNames, setFriendNames] = useState([]);
+  const [friendIDs, setFriendIDs] = useState([]);
 
   useEffect(() => {
-    const friendIDs = [];
-    currentUser.friends.forEach((friend) => friendIDs.push(friend.friendID));
-
-    if (friendIDs.length !== 0) {
-      getFriends(friendIDs)
-        .then((results) => {
-          const names = [];
-          results.forEach((result) => names.push(result.name));
-          return names;
-        })
-        .then((names) => {
-          setFriendNames(names);
-        });
-    } else {
-      setFriendNames([]);
-    }
+    const id_list = [];
+    currentUser.friends.forEach((friend) => id_list.push(friend.friendID));
+    setFriendIDs(id_list);
   }, [currentUser]);
-
   const clearResults = () => {
     dispatch({ type: "CLEAR_RESULTS" });
   };
@@ -46,7 +31,7 @@ export const SearchResults = ({ currentUser }) => {
                     <p>{result.name}</p>
                     <Button
                       user={currentUser}
-                      names={friendNames}
+                      id_list={friendIDs}
                       searchedResult={result}
                     />
                   </div>
@@ -63,4 +48,4 @@ export const SearchResults = ({ currentUser }) => {
       )}
     </>
   );
-};
+});

@@ -6,22 +6,25 @@ import {
   sendFriendReq,
 } from "../Utilities/firebaseUtils";
 
-export const Button = ({ user, names, searchedResult }) => {
-  if (names?.includes(searchedResult.name)) {
+export const Button = ({ user, id_list, searchedResult }) => {
+  const request_sentIDs = user?.reqSent?.map((request) => request.id);
+  const request_receivedIDs = user?.reqRec?.map((request) => request.id);
+
+  if (id_list?.includes(searchedResult.id)) {
     const { chatID } = user.friends?.filter(
       (friend) => friend.friendID === searchedResult.id
     )[0];
 
     return (
-      <Link to={`chatpage/${chatID}`} className="react-link">
+      <Link to={`/chatpage/${chatID}`} className="react-link">
         chat
       </Link>
     );
   }
-  if (user?.reqSent.includes(searchedResult.id)) {
+  if (request_sentIDs.includes(searchedResult.id)) {
     return <p>request sent</p>;
   }
-  if (user?.reqRec.includes(searchedResult.id)) {
+  if (request_receivedIDs.includes(searchedResult.id)) {
     return (
       <div className="req-received-buttons">
         <button

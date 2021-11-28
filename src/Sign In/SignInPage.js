@@ -13,8 +13,6 @@ export const SignInPage = () => {
     }
   };
 
-  console.log(currentUser?.uid);
-
   return (
     <>
       {!currentUser ? (
@@ -44,7 +42,7 @@ export const SignInPage = () => {
 
           <section>
             <main className="sign-in">
-              <Link to="/home">
+              <Link to={`/home/${currentUser?.uid}`}>
                 <button id="go-to-home-button">Go to Home Page</button>
               </Link>
               <p id="successfully-logged-in">

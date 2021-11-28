@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import { searchUsers } from "../Utilities/firebaseUtils";
 import { useDataLayerValue } from "../Utilities/reuseFunctions";
 
-export const SearchBar = ({ currentUser }) => {
+export const SearchBar = memo(({ currentUserID }) => {
   const [searchItem, setSearchItem] = useState("");
   const searchRef = useRef();
   const [{}, dispatch] = useDataLayerValue();
@@ -10,7 +10,7 @@ export const SearchBar = ({ currentUser }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchItem) {
-      searchUsers(searchItem, currentUser.id).then((results) => {
+      searchUsers(searchItem, currentUserID).then((results) => {
         dispatch({
           type: "ADD_RESULTS",
           payload: { data: results, search: searchRef.current.value },
@@ -38,4 +38,4 @@ export const SearchBar = ({ currentUser }) => {
       </form>
     </>
   );
-};
+});

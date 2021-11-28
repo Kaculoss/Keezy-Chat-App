@@ -1,5 +1,6 @@
 body {
   background-color: rgba(252, 253, 231, 0.3);
+  position: relative;
 }
 
 main {
@@ -17,7 +18,6 @@ p {
   line-height: 24px;
   padding: 10px 20px;
   border-radius: 25px;
-  position: relative;
   color: black;
   font-weight: 600;
 }
@@ -50,7 +50,7 @@ form {
   font-size: 1.5rem;
 }
 
-input {
+input[type="text"] {
   line-height: 1.5;
   width: 100%;
   font-size: 1.5rem;
@@ -84,6 +84,7 @@ form > button {
 /* Sign in Page Stylings */
 
 .chat-ui {
+  position: relative;
   background-color: rgba(217, 236, 135, 0.261);
   margin: 0 auto;
   max-width: 700px;
@@ -97,7 +98,7 @@ form > button {
   min-height: 50px;
   width: 100%;
   max-width: 700px;
-  position: fixed;
+  position: absolute;
   top: 0;
   display: flex;
   justify-content: space-between;
@@ -163,6 +164,7 @@ form > button {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  height: 100%;
 }
 
 #home-title {
@@ -404,6 +406,24 @@ form > button {
   background-color: rgba(70, 66, 67, 0.898);
 }
 
+#create-new-space {
+  padding: 5px;
+  font-size: 0.7rem;
+  border-radius: 5px;
+}
+
+.admin-space-chat {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#delete-space {
+  background-color: inherit;
+  color: rgb(248, 7, 7);
+}
+
 /* ShowRequets Styling */
 .request-div h4 {
   font-size: 0.7rem;
@@ -569,6 +589,7 @@ form > button {
 
 .chat-page {
   width: 30%;
+  height: 100%;
 }
 
 .chat-page-chatname {
@@ -586,17 +607,117 @@ form > button {
   width: 60%;
 }
 
-/* .chat-page-title {
+/* Admin Space Header styling */
+
+.admin-space-header {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-page-chatname {
+  text-align: center;
+  margin: 0;
+  margin-bottom: 3px;
+}
+
+.admin-space-header-buttons {
+  height: 50%;
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
+}
+
+.admin-space-header-buttons button {
+  padding: 3px;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  margin: 0;
+}
+
+#rename {
+  background-color: rgb(68, 129, 150);
+}
+
+#add {
+  background-color: rgb(108, 189, 108);
+}
+
+#remove {
+  background-color: rgb(146, 47, 47);
+}
+
+.admin-list {
+  position: absolute;
+  top: 10vh;
+  left: 25%;
+  background-color: rgb(221, 208, 135);
+  width: 50%;
+  border-radius: 0 0 10px 10px;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-list .all-lists {
+  overflow: hidden;
+  width: 100%;
+  max-height: 50vh;
+}
+
+.admin-list .shade {
+  background-color: rgba(0, 0, 0, 0.063);
+}
+.each-list {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-} */
+  font-size: 1.2rem;
+  padding: 0 20px;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  vertical-align: middle;
+}
+.admin-list label {
+  vertical-align: middle;
+  padding: 5px;
+}
+
+.admin-list button {
+  padding: 3px;
+  margin: 5px 0 5px 0;
+}
+
+.admin-list-button-div {
+  background-color: rgb(186, 149, 29);
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 0 0 10px 10px;
+}
+
+.admin-list-button-div button {
+  border-radius: 5px;
+  font-size: 1rem;
+  padding: 8px;
+}
+
+.admin-list .no-results {
+  text-align: center;
+}
 
 /* ChatRoom Styling */
 
 .chatroom-main {
-  /* overflow-y: scroll; */
   background-color: rgb(253, 244, 193);
   height: 80vh;
   padding: 0;
@@ -618,7 +739,7 @@ form > button {
   background-color: rgb(5, 1, 1);
 }
 
-.text-input {
+#text-input {
   color: black;
   background-color: rgba(153, 185, 255, 0.57);
 }
@@ -637,26 +758,63 @@ form > button {
     1px 1px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
-.display-chat-text > p {
+.text-div {
   border-radius: 5px;
-  padding: 5px;
   max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
 }
 
 .sent {
   flex-direction: row-reverse;
 }
 
-.sent > p {
+.sent .text-div {
   background-color: rgba(153, 185, 255, 0.57);
   align-self: flex-end;
   box-shadow: -1px -1px 5px 1px rgba(0, 0, 0, 0.2),
     1px 1px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
-.received > p {
+.sent .text-div #text-p {
+  background-color: rgba(153, 185, 255, 0.782);
+  border-radius: 5px 5px 0 0;
+  box-sizing: border-box;
+}
+
+.received .text-div #text-p {
+  background-color: rgba(148, 121, 53, 0.885);
+  border-radius: 5px 5px 0 0;
+  box-sizing: border-box;
+}
+
+.sent .text-div #date-time-p {
+  box-sizing: border-box;
+  text-align: right;
+}
+
+.received .text-div {
   box-shadow: -1px -1px 5px 1px rgba(0, 0, 0, 0.2),
     1px 1px 5px 1px rgba(0, 0, 0, 0.2);
 
   background-color: rgba(148, 121, 53, 0.768);
+}
+
+.text-div p {
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  font-size: 1.1rem;
+  max-width: 100%;
+}
+
+#text-p {
+  padding: 5px;
+}
+
+#date-time-p {
+  font-size: 0.6rem;
+  padding: 0 5px;
+  line-height: inherit;
 }

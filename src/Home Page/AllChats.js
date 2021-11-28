@@ -1,73 +1,79 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useState } from "react";
 import { Link } from "react-router-dom";
-import { getFriends, mergeFriend } from "../Utilities/firebaseUtils";
-import { getSpaceChats } from "../Utilities/reuseFunctions";
+import { ConfirmModal } from "../Modals/ConfirmModal";
+import { deleteSpace } from "../Utilities/firebaseUtils";
 
-export const AllChats = memo(({ category, currentUser }) => {
-  const [friends, setFriends] = useState([]);
-  let data;
-  if (category === "space") {
-    data = getSpaceChats();
-  }
+export const AllChats = memo(({ chats, category }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteChatID, setDeleteChatID] = useState("");
 
-  useEffect(() => {
-    if (typeof currentUser !== "undefined") {
-      const myFriends = currentUser?.friends;
-      const friendIDs = myFriends?.map((friend) => friend.friendID);
+  const handleDeleteBtn = (chatID) => {
+    setDeleteChatID(chatID);
+    setModalOpen(true);
+  };
 
-      if (typeof friendIDs !== "undefined" && friendIDs.length !== 0) {
-        getFriends(friendIDs)
-          .then((results) => {
-            const friendChats = currentUser.friends.map((friend) => friend);
-            const friends = mergeFriend(friendChats, results);
-            return friends;
-          })
-          .then((results) => setFriends(results));
-      }
+  const handleDeleteSpace = () => {
+    if (deleteChatID) {
+      deleteSpace(deleteChatID).then(handleCancle());
     }
-  }, [currentUser]);
+    handleCancle();
+  };
+
+  const handleCancle = () => {
+    setModalOpen(false);
+    setDeleteChatID("");
+  };
 
   let count = 0;
-  if (category === "space") {
-    return (
-      <>
-        <div className={`chat-div chat-${category}-div`}>
-          {data.map((chat) => {
-            const { id, name, chatID } = chat;
+  return (
+    <>
+      <div className={`chat-div chat-${category}-div`}>
+        {chats &&
+          chats.map((chat) => {
+            const { name, chatID, isAdmin } = chat;
             const shade = count % 2 !== 0 ? "no-shade" : "shade";
             count += 1;
             return (
-              <div key={id} className={`${category}-chat all-chats ${shade}`}>
+              <div
+                key={chatID}
+                className={`${category}-chat all-chats ${shade}`}
+              >
                 <p>{name}</p>
-                <Link className="react-link chats-link">enter space</Link>
+                {category === "space" && isAdmin ? (
+                  <div className="admin-space-chat">
+                    <button
+                      onClick={() => handleDeleteBtn(chatID)}
+                      className="react-link space-link"
+                      id="delete-space"
+                    >
+                      delete space
+                    </button>
+                    <Link
+                      to={`/chatpage/${chatID}`}
+                      className="react-link chats-link"
+                    >
+                      enter space
+                    </Link>
+                  </div>
+                ) : (
+                  <Link
+                    to={`/chatpage/${chatID}`}
+                    className="react-link chats-link"
+                  >
+                    {category === "space" ? "enter space" : "chat"}
+                  </Link>
+                )}
               </div>
             );
           })}
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <div className={`chat-div chat-${category}-div`}>
-          {friends.map((chat) => {
-            const { id, name, chatID } = chat;
-            const shade = count % 2 !== 0 ? "no-shade" : "shade";
-            count += 1;
-            return (
-              <div key={id} className={`${category}-chat all-chats ${shade}`}>
-                <p>{name}</p>
-                <Link
-                  to={`/chatpage/${chatID}`}
-                  className="react-link chats-link"
-                >
-                  chat
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      </>
-    );
-  }
+        {modalOpen && (
+          <ConfirmModal
+            handleContinue={handleDeleteSpace}
+            handleCancel={handleCancle}
+            message="Are You Sure You Want To Delete This Space?"
+          />
+        )}
+      </div>
+    </>
+  );
 });

@@ -1,93 +1,76 @@
 import React, { useEffect, useState } from "react";
 import { useParams, withRouter } from "react-router";
-import { Link } from "react-router-dom";
-import { collection, where, query, onSnapshot } from "@firebase/firestore";
-
 import {
-  db,
+  getChatProperties,
   getFriendChatName,
-  logout,
+  getSpaceName,
   useAuth,
-  useFirestore,
 } from "../Utilities/firebaseUtils";
 import { useDataLayerValue } from "../Utilities/reuseFunctions";
+import { AdminList } from "./AdminList";
+import { AdminSpaceHeader } from "./AdminSpaceHeader";
 import { ChatRoom } from "./ChatRoom";
+import { OtherHeader } from "./OtherHeader";
 
 const ChatPage = () => {
-  const [{}, dispatch] = useDataLayerValue();
-  const [user, setUser] = useState([]);
   const [chatname, setChatname] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [{ showAdminList }, dispatch] = useDataLayerValue();
   const { chatID } = useParams();
   const currentUser = useAuth();
-  const chatroom = useFirestore(chatID);
-
-  const handleLogout = async () => {
-    try {
-      dispatch({ type: "CLEAR_RESULTS" });
-      await logout();
-    } catch {
-      throw new Error("can not sign out");
-    }
-  };
 
   useEffect(() => {
     if (currentUser) {
-      const collectionRef = collection(db, "users");
-      const queryStatement = where("id", "==", currentUser?.uid);
-      const q = query(collectionRef, queryStatement);
+      getChatProperties(chatID).then((result) => {
+        if (result.chatCategory === "friend-chat") {
+          getFriendChatName(chatID, currentUser.uid)
+            .then((results) => setChatname(results))
+            .catch((err) => console.log(err));
+        }
 
-      const unsub = onSnapshot(q, (snapshot) => {
-        setUser(snapshot.docs.map((doc) => doc.data())[0]);
+        if (result.chatCategory === "space-chat") {
+          getSpaceName(chatID)
+            .then((name) => setChatname(name))
+            .catch((err) => console.log(err));
+        }
+
+        if (result.admin === currentUser?.uid) {
+          setIsAdmin(true);
+        }
+
+        if (result.admin !== currentUser?.uid) {
+          setIsAdmin(false);
+        }
       });
-
-      return unsub;
     }
-  }, [currentUser]);
+  }, [currentUser, chatID]);
 
-  useEffect(() => {
-    if (typeof user !== "undefined") {
-      getFriendChatName(chatID, user.id).then((results) => {
-        return setChatname(results);
-      });
+  const closeAdminList = () => {
+    dispatch({ type: "CLOSE_ADMIN_LIST" });
+  };
 
-      return () => {
-        setChatname({});
-      };
-    }
-  }, [user]);
   return (
     <>
-      {user && (
+      {currentUser && (
         <div className="chat-ui">
-          <header>
-            <div className="home chat-page">
-              <h2 className="chat-ui-title" id="home-title">
-                Keezy Chat App
-              </h2>
-              <Link to="/home" className="react-link">
-                Back To Homepage
-              </Link>
-            </div>
-            <h3 className="chat-page-chatname">{chatname}</h3>
-            <div className="chat-page-button">
-              <button
-                className="sign-out-button"
-                id="chat-page-signout"
-                onClick={handleLogout}
-              >
-                Sign Out
-              </button>
-            </div>
-          </header>
-
+          {isAdmin ? (
+            <AdminSpaceHeader
+              userID={currentUser?.uid}
+              chatID={chatID}
+              closeAdminList={closeAdminList}
+            />
+          ) : (
+            <OtherHeader chatname={chatname} userID={currentUser?.uid} />
+          )}
+          {showAdminList && (
+            <AdminList
+              closeAdminList={closeAdminList}
+              chatID={chatID}
+              userID={currentUser?.uid}
+            />
+          )}
           <section>
-            {chatroom[0]?.participantIDs.includes(user.id) && (
-              <ChatRoom
-                chatroom={chatroom}
-                currentUser={user}
-                chatID={chatID}
-              />
-            )}
+            <ChatRoom user={currentUser} chatID={chatID} />
           </section>
         </div>
       )}

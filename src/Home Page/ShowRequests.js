@@ -5,29 +5,35 @@ import {
   rejectFriendReq,
 } from "../Utilities/firebaseUtils";
 
-export const ShowRequests = ({ currentUser, reqSent, reqRec }) => {
+export const ShowRequests = ({ currentUser }) => {
   const [requestSent, setRequestSent] = useState([]);
   const [requestReceived, setRequestReceived] = useState([]);
 
   useEffect(() => {
-    if (typeof reqSent !== "undefined") {
-      if (reqSent?.length !== 0) {
-        getFriends(reqSent).then((results) => setRequestSent(results));
+    if (currentUser) {
+      const request_sentIDs = currentUser?.reqSent?.map(
+        (request) => request.id
+      );
+
+      const request_receivedIDs = currentUser?.reqRec?.map(
+        (request) => request.id
+      );
+
+      if (request_sentIDs?.length !== 0) {
+        getFriends(request_sentIDs).then((results) => setRequestSent(results));
       } else {
         setRequestSent([]);
       }
-    }
-  }, [reqSent]);
 
-  useEffect(() => {
-    if (typeof reqRec !== "undefined") {
-      if (reqRec?.length !== 0) {
-        getFriends(reqRec).then((results) => setRequestReceived(results));
+      if (request_receivedIDs?.length !== 0) {
+        getFriends(request_receivedIDs).then((results) =>
+          setRequestReceived(results)
+        );
       } else {
         setRequestReceived([]);
       }
     }
-  }, [reqRec]);
+  }, [currentUser]);
 
   let recCount = 0;
   let sentCount = 0;
