@@ -1,27 +1,37 @@
 import React from "react";
-import "./Modal.css";
 
 export const ConfirmModal = ({
-  handleContinue,
+  handleConfirm,
   handleCancel,
-  message,
+  handleReject,
+  title,
   confirmText,
-  cancelText,
+  rejectText,
 }) => {
+  const handleClickAnywhereElse = (e) => {
+    if (e.target.id === "modal") {
+      handleCancel();
+    }
+  };
+
   return (
-    <div className="modalBackground">
-      <div className="modalContainer">
-        <div className="titleCloseBtn">
+    <div
+      id="modal"
+      className="modalBackground"
+      onClick={handleClickAnywhereElse}
+    >
+      <div className="modalContainer confirmContainer">
+        <div className="modal-titleCloseBtn">
           <button onClick={handleCancel}>X</button>
         </div>
-        <div className="title">
-          <p>{message || "Are You Sure You Want To Continue?"}</p>
+        <div className="modal-title">
+          <p>{title || "Are You Sure You Want To Continue?"}</p>
         </div>
-        <div className="footer">
-          <button onClick={handleCancel} id="cancelBtn">
-            {cancelText || "No, cancel"}
+        <div className="modal-footer">
+          <button onClick={handleReject || handleCancel} id="modal-cancelBtn">
+            {rejectText || "No, cancel"}
           </button>
-          <button onClick={handleContinue}>
+          <button onClick={handleConfirm}>
             {confirmText || "Yes, continue"}
           </button>
         </div>

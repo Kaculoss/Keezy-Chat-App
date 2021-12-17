@@ -1,25 +1,35 @@
 import React from "react";
-import "./Modal.css";
 
 export const PromptModal = ({
   setStateText,
   stateText,
   handleConfirm,
+  handleReject,
   handleCancel,
   confirmText,
-  cancelText,
+  rejectText,
   title,
 }) => {
+  const handleClickAnywhereElse = (e) => {
+    if (e.target.id === "modal") {
+      handleCancel();
+    }
+  };
+
   return (
-    <div className="modalBackground">
+    <div
+      id="modal"
+      className="modalBackground"
+      onClick={handleClickAnywhereElse}
+    >
       <div className="modalContainer promptContainer">
-        <div className="titleCloseBtn">
+        <div className="modal-titleCloseBtn">
           <button onClick={handleCancel}>X</button>
         </div>
-        <div className="title">
+        <div className="modal-title">
           <p>{title}</p>
         </div>
-        <div className="body">
+        <div className="modal-body">
           <input
             type="text"
             placeholder="type the space name here"
@@ -29,9 +39,9 @@ export const PromptModal = ({
             }}
           />
         </div>
-        <div className="footer">
-          <button onClick={handleCancel} id="cancelBtn">
-            {cancelText || "Cancel"}
+        <div className="modal-footer">
+          <button onClick={handleReject || handleCancel} id="modal-cancelBtn">
+            {rejectText || "Cancel"}
           </button>
           <button onClick={handleConfirm}>{confirmText || "Ok"}</button>
         </div>

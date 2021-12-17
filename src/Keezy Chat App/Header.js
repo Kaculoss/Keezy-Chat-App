@@ -1,6 +1,6 @@
 import React from "react";
-import { logout } from "./Utilities/firebaseUtilsUpdated";
-import { useDataLayerValue } from "./Utilities/OthersUtils";
+import { logout } from "../Utilities/firebaseUtilsUpdated";
+import { useDataLayerValue } from "../Utilities/OthersUtils";
 
 export const Header = () => {
   const [{ isSignedIn, isHome, isSignInPage }, dispatch] = useDataLayerValue();

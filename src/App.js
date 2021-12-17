@@ -1,5 +1,5 @@
 import React from "react";
-import Setup from "./ZZZ NEW LOOK";
+import Setup from "./Keezy Chat App";
 
 // Firestore Quickstart Documentation:
 // https://firebase.google.com/docs/firestore/quickstart

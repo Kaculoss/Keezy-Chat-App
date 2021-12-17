@@ -1,57 +1,100 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { googleSignIn, logout, useAuth } from "../Utilities/firebaseUtils";
+import { Header } from "../Keezy Chat App/Header";
+import { db, googleSignIn, useAuth } from "../Utilities/firebaseUtilsUpdated";
+import { useDataLayerValue } from "../Utilities/OthersUtils";
+import { doc, onSnapshot } from "@firebase/firestore";
 
 export const SignInPage = () => {
   const currentUser = useAuth();
+  const [{ isSignInPage }, dispatch] = useDataLayerValue();
+  const [isLoading, setIsLoading] = useState(false);
+  const [clicked, setClicked] = useState("no");
+  const [user, setUser] = useState([]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch {
-      throw new Error("can not sign out");
-    }
+  const handleSignIn = async () => {
+    googleSignIn().catch((error) => {
+      setClicked("no");
+      return error.message;
+    });
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      const docRef = doc(db, "testUsers", currentUser?.uid);
+      const unsub = onSnapshot(
+        docRef,
+        (snapshot) => {
+          setUser(snapshot.data());
+        },
+        (err) => {
+          setUser([]);
+          return err;
+        }
+      );
+      return unsub;
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (clicked === "yes") {
+      setIsLoading(true);
+      handleSignIn();
+    } else {
+      setIsLoading(false);
+    }
+  }, [clicked]);
+
+  useEffect(() => {
+    dispatch({ type: "IS_SIGN_IN_PAGE" });
+    if (currentUser && user) {
+      dispatch({ type: "SIGN_IN" });
+      setClicked("no");
+    }
+  }, [dispatch, currentUser, user]);
 
   return (
     <>
-      {!currentUser ? (
-        <div className="chat-ui sign-in-page">
-          <header>
-            <h3 className="chat-ui-title">Keezy Chat App</h3>
-          </header>
-
-          <section>
-            <main className="sign-in">
-              <button onClick={googleSignIn}>Sign in with Google</button>
-              <p>
-                Do not violate the community guidelines or you will be banned
-                for life!
-              </p>
-            </main>
-          </section>
-        </div>
-      ) : (
-        <div className="chat-ui sign-in-page">
-          <header>
-            <h3 className="chat-ui-title">Keezy Chat App</h3>
-            <button className="sign-out-button" onClick={handleLogout}>
-              Sign Out
-            </button>
-          </header>
-
-          <section>
-            <main className="sign-in">
-              <Link to={`/home/${currentUser?.uid}`}>
-                <button id="go-to-home-button">Go to Home Page</button>
+      <Header />
+      <div className="container container-signinpage">
+        <div className="signinpage">
+          {currentUser && user && isSignInPage ? (
+            <>
+              <Link
+                to={`/home/${currentUser?.uid}`}
+                id="signinpage-go-home"
+                className="link"
+              >
+                Go To Home Page
               </Link>
-              <p id="successfully-logged-in">
-                You have signed in successfully!
-              </p>
-            </main>
-          </section>
+              <p>You have signed in successfully!</p>
+            </>
+          ) : (
+            <>
+              {isLoading ? (
+                <button
+                  className="link, loader"
+                  id="signinpage-go-home"
+                  disabled={true}
+                >
+                  <span className="loading__amin"></span> Go To Home Page
+                </button>
+              ) : (
+                <>
+                  <button onClick={() => setClicked("yes")}>
+                    Sign in with Google
+                  </button>
+                  <p className="welcome-text">Sign In!</p>
+                  <p className="welcome-text">Make Friends!</p>
+                  <p className="welcome-text">Create Spaces!</p>
+                  <p className="welcome-text">Add Friends To Spaces!</p>
+                  <p className="welcome-text">Enjoy Your Chat!!!</p>
+                </>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 };
