@@ -1,21 +1,24 @@
 import React from "react";
 import "./index.css";
 import {
+  DataLayer,
+  initialState,
+  ProtectedRoute,
+  reducer,
+} from "./Utilities/OthersUtils";
+import {
   BrowserRouter as Router,
   Route,
   Redirect,
   Switch,
 } from "react-router-dom";
-import ChatPage from "../Chats/ChatPage";
-import { SignInPage } from "../Sign In/SignInPage";
-import { useAuth } from "../Utilities/firebaseUtils";
-import { ProtectedRoute } from "../Utilities/react-router-utils";
-import { DataLayer, initialState, reducer } from "../Utilities/reuseFunctions";
-import Home from "./Home";
+import { SignInPage } from "./Sign In/SignInPage";
+import Home from "./Home Page/Home";
+import ChatPage from "./Chat Page/ChatPage";
+import { useAuth } from "./Utilities/firebaseUtilsUpdated";
 
 const Index = () => {
   const currentUser = useAuth();
-
   return (
     <>
       <DataLayer initialState={initialState} reducer={reducer}>
@@ -44,7 +47,7 @@ const Index = () => {
   );
 };
 
-function Error() {
+export function Error() {
   return <Redirect to={"/"} />;
 }
 

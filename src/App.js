@@ -1,6 +1,5 @@
-import "./App.css";
 import React from "react";
-import Setup from "./Home Page";
+import Setup from "./ZZZ NEW LOOK";
 
 // Firestore Quickstart Documentation:
 // https://firebase.google.com/docs/firestore/quickstart
